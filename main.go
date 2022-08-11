@@ -31,6 +31,19 @@ func dbInsert(text string, status string) {
 	defer db.Close()
 }
 
+func dbUpdate(id int, text string, status string) {
+	db, err := gorm.Open("sqlite3", "test.sqlite3")
+	if err != nil {
+		panic("データベース開けず(dbupdate)")
+	}
+	var todo Todo
+	db.First(&todo, id)
+	todo.Text = text
+	todo.Status = status
+	db.Save(&todo)
+	db.Close()
+}
+
 
 func main() {
 	engine:= gin.Default()
