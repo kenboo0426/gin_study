@@ -1,13 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-</head>
-<body>
-  {{.message}}
-  vvvv
-</body>
-</html>
+{{template "header" .}}
+  <h2>追加</h2>
+  <form method="post" action="/new">
+    <p>内容<input type="text" name="text" size="30" placeholder="入力してください"></p>
+    <p>状態
+      <select name="status">
+        <option value="未実行">未実行</option>
+        <option value="実行中">実行中</option>
+        <option value="終了">終了</option>
+      </select>
+    </p>
+    <p><input type="submit" value="Send"></p>
+  </form>
+  <ul>
+    {{range .todos }}
+    <li>内容:{{ .Text }}、状態：{{ .Status }}</li>
+    <label><a href="/detail/{{ .ID }}">編集</a></label>
+    <label><a href="/delete_check/{{ .ID }}">削除</a></label>
+    {{end}}
+  </ul>
+{{ template "footer" . }}
