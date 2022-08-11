@@ -4,7 +4,8 @@ import (
 	"github.com/gin-gonic/gin"
   "net/http"
 	"github.com/jinzhu/gorm"
-	"github.com/mattn/go-sqlite3"
+	_"github.com/mattn/go-sqlite3"
+	"strconv"
 )
 
 type Todo struct {
@@ -79,17 +80,68 @@ func dbGetOne(id int) Todo {
 
 func main() {
 	engine:= gin.Default()
-	// engine.GET("/someGet", getting)
 	engine.LoadHTMLGlob("web/template/*")
-	engine.GET("/fff", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "index.html", gin.H{
-			"message": "hello world",
-		})
-	})
+	dbInit()
+
 	engine.GET("/", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "wwwwww",
+		todos := dbGetAll()
+		c.HTML(http.StatusOK, "index.html", gin.H{
+			"todos": todos,
 		})
 	})
+
+	engine.POST("/new", func(c *gin.Context) {
+		text := c.PostForm("text")
+		status := c.PostForm("status")
+		dbInsert(text, status)
+		c.Redirect(302, "/")
+	})
+
+	engine.GET("/detail/:id", func(c *gin.Context) {
+		n := c.Param("id")
+		id, err := strconv.Atoi(n)
+		if err != nil {
+			panic(err)
+		}
+		todo := dbGetOne(id)
+		c.HTML(http.StatusOK, "detail.html", gin.H{
+			"todo": todo,
+		})
+	})
+
+	engine.POST("/update/:id", func(c *gin.Context) {
+		n := c.Param("id")
+		id, err := strconv.Atoi(n)
+		if err != nil {
+			panic("ERROR")
+		}
+		text := c.PostForm("text")
+		status := c.PostForm("status")
+		dbUpdate(id, text, status)
+		c.Redirect(302, "/")
+	})
+
+	engine.GET("/delete_check/:id", func(c *gin.Context) {
+		n := c.Param("id")
+		id, err := strconv.Atoi(n)
+		if err != nil {
+			panic("ERROR")
+		}
+		todo := dbGetOne(id)
+		c.HTML(200, "delete.html", gin.H{
+			"todo": todo,
+		})
+	})
+
+	engine.POST("/delete/:id", func(c *gin.Context) {
+		n := c.Param("id")
+		id, err := strconv.Atoi(n)
+		if err != nil {
+			panic("ERRPR")
+		}
+		dbDelete(id)
+		c.Redirect(302, "/")
+	})
+
 	engine.Run(":3000")
 }
