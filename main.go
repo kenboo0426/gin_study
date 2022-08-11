@@ -1,7 +1,36 @@
 package main
 
-import "github.com/gin-gonic/gin"
-import "net/http"
+import (
+	"github.com/gin-gonic/gin"
+  "net/http"
+	"github.com/jinzhu/gorm"
+	"github.com/mattn/go-sqlite3"
+)
+
+type Todo struct {
+	gorm.Model
+	Text string
+	Status string
+}
+
+func dbInit() {
+	db, err := gorm.Open("sqlite3", "test.sqlite3")
+	if err != nil {
+		panic("データベース開けづ！(dbInit)")
+	}
+	db.AutoMigrate(&Todo{})
+	defer db.Close()
+}
+
+func dbInsert(text string, status string) {
+	db, err := gorm.Open("sqlite3", "test.sqlite3")
+	if err != nil {
+		panic("データベース開けず(dbInsert)")
+	}
+	db.Create(&Todo{Text: text, Status: status})
+	defer db.Close()
+}
+
 
 func main() {
 	engine:= gin.Default()
@@ -19,5 +48,3 @@ func main() {
 	})
 	engine.Run(":3000")
 }
-
-git remote add origin https://github.com/kenboo0426/gin_study.git
