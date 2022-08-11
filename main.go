@@ -55,6 +55,17 @@ func dbDelete(id int) {
 	db.Close()
 }
 
+func dbGetAll() []Todo {
+	db, err := gorm.Open("sqlite3", "test.sqlite3")
+	if err != nil {
+		panic("データベース開けず dbgetall")
+	}
+	var todos []Todo
+	db.Order("created_at desc").Find(&todos)
+	db.Close()
+	return todos
+}
+
 func main() {
 	engine:= gin.Default()
 	// engine.GET("/someGet", getting)
