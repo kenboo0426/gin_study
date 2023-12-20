@@ -1,16 +1,18 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
-  "net/http"
-	"github.com/jinzhu/gorm"
-	_"github.com/mattn/go-sqlite3"
+	"fmt"
+	"net/http"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 type Todo struct {
 	gorm.Model
-	Text string
+	Text   string
 	Status string
 }
 
@@ -46,7 +48,8 @@ func dbUpdate(id int, text string, status string) {
 }
 
 func dbDelete(id int) {
-	db,err := gorm.Open("sqlite3", "test.sqlite3")
+	fmt.Println("hello")
+	db, err := gorm.Open("sqlite3", "test.sqlite3")
 	if err != nil {
 		panic("データベース開けず dbdelete")
 	}
@@ -79,7 +82,7 @@ func dbGetOne(id int) Todo {
 }
 
 func main() {
-	engine:= gin.Default()
+	engine := gin.Default()
 	engine.LoadHTMLGlob("web/template/*")
 	dbInit()
 
